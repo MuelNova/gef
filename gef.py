@@ -54416,6 +54416,7 @@ class KernelbaseCommand(GenericCommand):
 
         self.out = []
         if kinfo.text_base:
+            gdb.execute(f"set $kbase = {kinfo.text_base:#x}")
             self.out.append("kernel text:   {:#x}-{:#x} ({:#x} bytes)".format(kinfo.text_base, kinfo.text_end, kinfo.text_size))
         else:
             err("Failed to resolve kernel text")
@@ -58126,6 +58127,8 @@ class KernelModuleCommand(GenericCommand):
             else: # ~ 4.5
                 base = read_int_from_memory(module + offset_module_core)
                 size = u32(read_memory(module + offset_module_core + current_arch.ptrsize + 4, 4))
+            
+            gdb.execute(f"set ${name_string}_base = {base:#x}")
 
             if not args.apply_symbol:
                 self.out.append("{:#018x} {:<24s} {:#018x} {:#018x}".format(module, name_string, base, size))
